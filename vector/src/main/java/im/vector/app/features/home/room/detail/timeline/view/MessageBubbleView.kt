@@ -9,6 +9,7 @@ package im.vector.app.features.home.room.detail.timeline.view
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.RippleDrawable
@@ -86,6 +87,12 @@ class MessageBubbleView @JvmOverloads constructor(
                     rippleMaskDrawable
             )
         }
+        setMaxWidthConstraint()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        setMaxWidthConstraint()
     }
 
     override fun renderMessageLayout(messageLayout: TimelineMessageLayout) {
@@ -177,5 +184,17 @@ class MessageBubbleView @JvmOverloads constructor(
 
     private fun TimelineMessageLayout.Bubble.CornersRadius.toFloatArray(): FloatArray {
         return floatArrayOf(topStartRadius, topStartRadius, topEndRadius, topEndRadius, bottomEndRadius, bottomEndRadius, bottomStartRadius, bottomStartRadius)
+    }
+
+    private fun setMaxWidthConstraint() {
+        val displayMetrics = context.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+
+        val constraintSet = ConstraintSet()
+        constraintSet.clone(views.bubbleView)
+
+        val maxWidth: Int = (screenWidth * 0.85).toInt()
+        constraintSet.constrainMaxWidth(R.id.viewStubContainer, maxWidth) // Use constrainMaxWidth
+        constraintSet.applyTo(views.bubbleView)
     }
 }
